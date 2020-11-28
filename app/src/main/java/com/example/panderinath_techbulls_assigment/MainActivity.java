@@ -7,7 +7,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.widget.EditText;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -25,8 +28,10 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rv_movies_list;
     private MoviesListAdapter adapter;
     Context mContext;
+    EditText et_search;
     LinearLayoutManager layoutManager;
     ArrayList<MoviesModel> arrayList = new ArrayList<>();
+    ArrayList<MoviesModel> arrayList2 = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mContext = MainActivity.this;
-
+        et_search = findViewById(R.id.et_search);
         rv_movies_list = findViewById(R.id.rv_movies_list);
         rv_movies_list.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(mContext);
@@ -43,6 +48,34 @@ public class MainActivity extends AppCompatActivity {
         adapter = new MoviesListAdapter(arrayList,mContext);
         rv_movies_list.setAdapter(adapter);
         getMoviesDetails();
+
+        et_search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    arrayList2.clear();
+                 if(charSequence.length()>2) {
+                     for (int j = 0; j < arrayList.size(); j++) {
+                         if (arrayList.get(j).getName().contains(charSequence)) {
+                         //if (charSequence.equals(arrayList.get(j).getName())) {
+                             arrayList2.add(arrayList.get(j));
+                             adapter = new MoviesListAdapter(arrayList2, MainActivity.this);
+                             rv_movies_list.setAdapter(adapter);
+                             adapter.notifyDataSetChanged();
+                         }
+                     }
+                 }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
     // API to Get the Movies Details
